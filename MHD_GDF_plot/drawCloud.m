@@ -39,7 +39,7 @@ figure(4)
 imshow(QB2gray')
 title('By')
 
-% draw Bx at x = pi
+% draw rho at x = pi
 figure(5)
 [Nx,Ny] = size(Q1);
 % Bx = load('Bx.txt');
@@ -48,3 +48,12 @@ plot(Xc,(Q1(:,3*Ny/5) + Q1(:,3*Ny/5 + 1))/2,'r-','linewidth',1.3);
 % plot(Yc,Bx(Nx/10,:),'r-','linewidth',1.3)
 title('rho cut at y = 0.6')
 axis([Xc(1),Xc(end),min(Q1(:,3*Ny/5)) - 0.1,max(Q1(:,3*Ny/5 + 1)) + 0.1])
+
+% draw rho at x = 1
+figure(6)
+% Bx = load('Bx.txt');
+% Bx = reshape(Bx,Nx/5,Ny);
+plot(Yc,(Q1(Nx/2,:) + Q1(Nx/2 + 1,:))/2,'r-','linewidth',1.3);
+% plot(Yc,Bx(Nx/10,:),'r-','linewidth',1.3)
+title('rho cut at y = 0.6')
+axis([Yc(1),Yc(end),min(Q1(Nx/2,:)) - 0.1,max(Q1(Nx/2,:)) + 0.1])
