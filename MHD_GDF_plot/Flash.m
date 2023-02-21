@@ -8,14 +8,29 @@
 % pause(0.1);
 % warning('on','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
 
-QF = Q1flash;
+Qrhoflash = Q1flash;
+Quflash = Q2flash./Q1flash;
+Qvflash = Q3flash./Q1flash;
+Qwflash = Q4flash./Q1flash;
+QEflash = Q5flash;
+QB1flash = Q6flash;
+QB2flash = Q7flash;
+QB3flash = Q8flash;
+gamma = 5/3;
+QPflash = (gamma - 1)*(QEflash - 0.5*Qrhoflash.*(Quflash.^2 + Qvflash.^2 + Qwflash.^2) - 0.5*(QB1flash.^2 + QB2flash.^2 + QB3flash.^2));
+QCflash = sqrt(abs(gamma*QPflash./Qrhoflash));
+QMachflash = sqrt(Quflash.^2 + Qvflash.^2 + Qwflash.^2)./QCflash;
+QBPflash = 0.5*(QB1flash.^2 + QB2flash.^2 + QB3flash.^2);
+QV2flash = Quflash.^2 + Qvflash.^2 + Qwflash.^2;
+
+QF = QMachflash;
 FRAME = frame;
 t0 = T(end)/FRAME;
 
 for i = 1:FRAME
     tt = (i - 1)*t0;
     [~,j] = min(abs(T - tt));
-    contourf(xc,yc,QF(:,:,1,j),15);colormap(nclCM(484,100));
+    contourf(xc,yc,QF(:,:,1,j),20);colormap(nclCM(484,100));
     %mesh(xc,yc,QF(:,:,1,j));axis([Xc(1),Xc(end),Yc(1),Yc(end),min(min(min(min(QF)))) - 0.5,max(max(max(max(QF)))) + 0.5]);colormap(cool);
     %p = pcolor(xc,yc,QF(:,:,1,j));colormap(nclCM(484,100));p.EdgeColor = 'none';
     %colormap(cool)
