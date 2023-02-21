@@ -123,7 +123,7 @@
         ULstar(5) = ELstar
         ULstar(6:8) = Ustar(6:8)
         
-        if ((abs(Bstarbot) > 1e-12) .and. (SRstar - SLstar > 1e-12)) then
+        if ((abs(Bstarbot) > 1e-6) .and. (SRstar - SLstar > 1e-6)) then
             if (SLstar > 0) then
                 Fhat1 = FL1 + SL*(ULstar - UL1)
                 Ustar = ULstar
