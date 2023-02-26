@@ -393,7 +393,7 @@
        evl(m,8) =lu(m,8)*g1-B3*lu(m,5)*g1**2
     enddo
     
-    ! 不作分解
+    ! component wise
     !evl = 0
     !evr = 0
     !do i = 1,8
