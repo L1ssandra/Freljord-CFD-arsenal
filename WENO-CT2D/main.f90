@@ -1,4 +1,4 @@
-    ! WENO2D_MHD.f90 
+    ! WENO2D_MHD
     
     ! The WENO-CT method for 2D ideal MHD equation
     program main
