@@ -1,0 +1,50 @@
+! Rotor
+
+real p
+p(r,z,phi) = 0.5
+real rho
+rho(r,z,phi) = rho0(r,z,phi)
+real v1
+v1(r,z,phi) = ux0(r,z,phi)
+real v2
+v2(r,z,phi) = uy0(r,z,phi)
+real v3
+v3(r,z,phi) = 0
+real B1
+B1(r,z,phi) = 0
+real B2
+B2(r,z,phi) = 2.4d0/sqrt(4*pi)
+real B3
+B3(r,z,phi) = 0
+
+real U1
+U1(r,z,phi) = rho(r,z,phi)
+real U2
+U2(r,z,phi) = rho(r,z,phi)*v1(r,z,phi)
+real U3
+U3(r,z,phi) = rho(r,z,phi)*v2(r,z,phi)
+real U4
+U4(r,z,phi) = rho(r,z,phi)*v3(r,z,phi)
+real U5
+U5(r,z,phi) = p(r,z,phi)/gamma1 + 0.5d0*rho(r,z,phi)*(v1(r,z,phi)**2 + v2(r,z,phi)**2 + v3(r,z,phi)**2) + 0.5d0*(B1(r,z,phi)**2 + B2(r,z,phi)**2 + B3(r,z,phi)**2)
+real U6
+U6(r,z,phi) = B1(r,z,phi)
+real U7
+U7(r,z,phi) = B2(r,z,phi)
+real U8
+U8(r,z,phi) = B3(r,z,phi)
+
+ra = 1
+rb = 2
+za = 0
+zb = 1
+
+bcR = 2
+bcL = 2
+bcU = 2
+bcD = 2
+
+tend = 0.015
+
+M = 1
+shock = 1

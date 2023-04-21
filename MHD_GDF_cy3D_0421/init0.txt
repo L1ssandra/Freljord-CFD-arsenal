@@ -1,0 +1,53 @@
+! smooth vortex
+
+real r2
+r2(x,y,z) = x**2.0d0 + y**2.0d0
+real p
+p(x,y,z) = 1 - r2(x,y,z)/(8.0d0*pi**2)*exp(1 - r2(x,y,z))
+real rho
+rho(x,y,z) = 1
+real v1
+v1(x,y,z) = 1 - 1d0/(2.0d0*pi)*y*exp(0.5d0*(1 - r2(x,y,z)))
+real v2
+v2(x,y,z) = 1 + 1d0/(2.0d0*pi)*x*exp(0.5d0*(1 - r2(x,y,z)))
+real v3
+v3(x,y,z) = 0
+real B1
+B1(x,y,z) = -1d0/(2.0d0*pi)*y*exp(0.5d0*(1 - r2(x,y,z)))
+real B2
+B2(x,y,z) = 1d0/(2.0d0*pi)*x*exp(0.5d0*(1 - r2(x,y,z)))
+real B3
+B3(x,y,z) = 0
+
+real U1
+U1(r,z,phi) = rho(r,z,phi)
+real U2
+U2(r,z,phi) = rho(r,z,phi)*v1(r,z,phi)
+real U3
+U3(r,z,phi) = rho(r,z,phi)*v2(r,z,phi)
+real U4
+U4(r,z,phi) = rho(r,z,phi)*v3(r,z,phi)
+real U5
+U5(r,z,phi) = p(r,z,phi)/gamma1 + 0.5d0*rho(r,z,phi)*(v1(r,z,phi)**2 + v2(r,z,phi)**2 + v3(r,z,phi)**2) + 0.5d0*(B1(r,z,phi)**2 + B2(r,z,phi)**2 + B3(r,z,phi)**2)
+real U6
+U6(r,z,phi) = B1(r,z,phi)
+real U7
+U7(r,z,phi) = B2(r,z,phi)
+real U8
+U8(r,z,phi) = B3(r,z,phi)
+
+ra = -5
+rb = 5
+za = -5
+zb = 5
+
+bcR = 1
+bcL = 1
+bcU = 1
+bcD = 1
+
+tend = 1
+
+is_2D = 1
+
+M = 1000000
