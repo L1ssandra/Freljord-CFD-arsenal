@@ -1,9 +1,0 @@
-#PBS -N DG_MHD_MPI_P3
-#PBS -o out.$PBS_JOBID
-#PBS -e err.$PBS_JOBID
-#PBS -l nodes=1:ppn=8
-#PBS -l walltime=24000:00:00
-#PBS -q cu1
-#PBS -r y
-cd $PBS_O_WORKDIR
-mpirun -np 256 ./all

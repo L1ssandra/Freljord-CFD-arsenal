@@ -1,3 +1,0 @@
-rm all *.mod *.o *.out
-mpiifort -mkl -r8 -i8 -o all main.f90
-rm *.mod *.o *.plt
