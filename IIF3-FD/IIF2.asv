@@ -1,0 +1,57 @@
+% IIF2.m
+
+t = 0;
+T = 0;
+
+frameMAX = 200;
+uhflash = zeros(1,Nx);
+
+uhflash(1,:) = uh;
+t1 = tend/frameMAX;
+ii1 = 1;
+
+duIIF = zeros(2,Nx);
+IIFindex = 1;
+
+beta2 = 3/2; beta1 = -1/2;
+
+while t < tend
+    
+    alpha = 1;
+    
+    dt = CFL*hx/alpha;
+    
+    if t + dt >= tend
+        dt = tend - t;
+        t = tend;
+    else
+        t = t + dt;
+    end
+    
+    du = Lh(uh);
+    
+    duIIF(end,:) = du;
+    
+%     Cmat = construct_Cmat(uh);
+    Cmat = construct_Cmat_4th(uh);
+    
+    if IIFindex == 1 % IIF1
+        uh = (expm(dt*Cmat)*uh')' + dt*du;
+    else % IIF2
+        uh = (expm(dt*Cmat)*uh')' + dt*(beta2*expduIIF(2,:) + beta1*duIIF(1,:));
+    end
+    
+    IIFindex = min([IIFindex + 1,2]);
+    
+    if t >= ii1*t1
+        uhflash(end + 1,:) = uh;
+        T = [T;t];
+        ii1 = ii1 + 1;
+    end
+    
+    fprintf('%d  %d\n',t,max(abs(uh(:,1))))
+    
+    % update the solution
+    duIIF(1:end - 1,:) = duIIF(2:end,:);
+     
+end

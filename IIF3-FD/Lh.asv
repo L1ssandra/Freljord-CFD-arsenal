@@ -1,0 +1,140 @@
+function du = Lh(uh)
+
+global Nx bcL bcR hx
+
+N = Nx;
+
+fQ = zeros(1,N);
+
+for i = 1:N
+    fQ(i) = f(Q(i));
+end
+
+% 周期边界
+if bcL == 1 && bcR == 1
+    fQL2 = [fQ(end - 1:end,:);fQ(1:end - 2,:)];
+    fQL1 = [fQ(end,:);fQ(1:end - 1,:)];
+    fQR1 = [fQ(2:end,:);fQ(1,:)];
+    fQR2 = [fQ(3:end,:);fQ(1:2,:)];
+    fQR3 = [fQ(4:end,:);fQ(1:3,:)];
+
+    QL2 = [Q(end - 1:end,:);Q(1:end - 2,:)];
+    QL1 = [Q(end,:);Q(1:end - 1,:)];
+    QR1 = [Q(2:end,:);Q(1,:)];
+    QR2 = [Q(3:end,:);Q(1:2,:)];
+    QR3 = [Q(4:end,:);Q(1:3,:)];
+end
+
+% 延长边界
+% fQL2 = [fQ(1:2,:);fQ(1:end - 2,:)];
+% fQL1 = [fQ(1,:);fQ(1:end - 1,:)];
+% fQR1 = [fQ(2:end,:);fQ(end,:)];
+% fQR2 = [fQ(3:end,:);fQ(end - 1:end,:)];
+% fQR3 = [fQ(4:end,:);fQ(end - 2:end,:)];
+% 
+% QL2 = [Q(1:2,:);Q(1:end - 2,:)];
+% QL1 = [Q(1,:);Q(1:end - 1,:)];
+% QR1 = [Q(2:end,:);Q(end,:)];
+% QR2 = [Q(3:end,:);Q(end - 1:end,:)];
+% QR3 = [Q(4:end,:);Q(end - 2:end,:)];
+
+fhat = zeros(N + 1,3);
+M1 = 0;
+M2 = 0;
+M3 = 0;
+
+for i = 1:N
+    alpha1 = abs(Q(i,2)./Q(i,1)) + sqrt(1.4*0.4*(Q(i,3) - 0.5*Q(i,2)^2./Q(i,1)));
+    alpha2 = abs(Q(i,2)./Q(i,1));
+    alpha3 = abs(Q(i,2)./Q(i,1) - sqrt(1.4*0.4*(Q(i,3) - 0.5*Q(i,2)^2./Q(i,1))));
+    if alpha1 > M1
+        M1 = alpha1;
+    end
+    if alpha2 > M2
+        M2 = alpha2;
+    end
+    if alpha3 > M3
+        M3 = alpha3;
+    end
+end
+
+Alpha = [M1;M2;M3];
+
+for i = 1:N
+    
+    fQP = zeros(3,5);
+    fQN = zeros(3,5);
+    QP = zeros(3,5);
+    QN = zeros(3,5);
+    % f+
+    fQP(:,1) = fQL2(i,:)';
+    fQP(:,2) = fQL1(i,:)';
+    fQP(:,3) = fQ(i,:)';
+    fQP(:,4) = fQR1(i,:)';
+    fQP(:,5) = fQR2(i,:)';
+    % f-
+    fQN(:,1) = fQR3(i,:)';
+    fQN(:,2) = fQR2(i,:)';
+    fQN(:,3) = fQR1(i,:)';
+    fQN(:,4) = fQ(i,:)';
+    fQN(:,5) = fQL1(i,:)';
+    % 投影到特征域
+    u = Q(i,2)/Q(i,1);
+    uR = QR1(i,2)/QR1(i,1);
+    u = 0.5*(u + uR);
+    gamma = 1.4;
+    p = 0.4*(Q(i,3) - 0.5*Q(i,2)^2./Q(i,1));
+    pR = 0.4*(QR1(i,3) - 0.5*QR1(i,2)^2./QR1(i,1));
+    p = 0.5*(p + pR);
+    rho = 0.5*(Q(i,1) + QR1(i,1));
+    c = sqrt(gamma*p/rho);
+    H = (0.5*(Q(i,3) + QR1(i,3)) + p)/rho;
+    
+    % 右特征向量
+    R1 = [1;u + c;H + u*c];
+    R2 = [1;u;0.5*u^2];
+    R3 = [1;u - c;H - u*c];
+    R = [R1,R2,R3];
+    
+    L = inv(R);
+    
+    QP(:,1) = QL2(i,:)';
+    QP(:,2) = QL1(i,:)';
+    QP(:,3) = Q(i,:)';
+    QP(:,4) = QR1(i,:)';
+    QP(:,5) = QR2(i,:)';
+    
+    QN(:,1) = QR3(i,:)';
+    QN(:,2) = QR2(i,:)';
+    QN(:,3) = QR1(i,:)';
+    QN(:,4) = Q(i,:)';
+    QN(:,5) = QL1(i,:)';
+    
+    for j = 1:5
+        fQP(:,j) = L*fQP(:,j);
+        fQN(:,j) = L*fQN(:,j);
+        QP(:,j) = L*QP(:,j);
+        QN(:,j) = L*QN(:,j);
+        fQP(:,j) = 0.5*(fQP(:,j) + Alpha.*QP(:,j));
+        fQN(:,j) = 0.5*(fQN(:,j) - Alpha.*QN(:,j));
+    end
+    
+    % 按分量重构
+    QRnew = WENO5S(fQP(:,1),fQP(:,2),fQP(:,3),fQP(:,4),fQP(:,5));
+    QLnew = WENO5S(fQN(:,1),fQN(:,2),fQN(:,3),fQN(:,4),fQN(:,5));
+    
+    Qnew = (R*(QRnew + QLnew)')';
+    
+    fhat(i + 1,:) = Qnew;
+    
+end
+
+% 周期边界
+fhat(1,:) = fhat(end,:);
+
+% 延长边界
+% fhat(1,:) = fhat(2,:);
+
+DQ = -(fhat(2:end,:) - fhat(1:end - 1,:))/h;
+
+end
